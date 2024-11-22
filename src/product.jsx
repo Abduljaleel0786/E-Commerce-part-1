@@ -11,6 +11,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
+import { useDispatch } from 'react-redux';
+import { addToCart } from './Slices/add-cart/addCartSlice';
 
 const Product = () => {
   const [CartList, setCartList] = useState([]);
@@ -19,6 +21,7 @@ const Product = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [categoryOption, setCategoryOption] = useState([]);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const cartHandler = (product) => {
@@ -159,9 +162,11 @@ const Product = () => {
                       <FavoriteIcon style={{ cursor: 'pointer' }} />
                     </Tooltip>
                     <Tooltip title="Add to Cart">
-                      <AddShoppingCartIcon
+                      <AddShoppingCartIcon onClick={()=>dispatch(addToCart ())}
                         style={{ cursor: 'pointer' }}
-                        onClick={() => cartHandler(product)}
+                     
+
+
                       />
                     </Tooltip>
                   </div>
