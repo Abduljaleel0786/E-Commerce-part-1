@@ -5,7 +5,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 
 const SignUp = () => {
-  const [pass, setpass] = useState()
+  
 
   const { control, handleSubmit } = useForm({
     defaultValues: {

@@ -1,85 +1,91 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Autocomplete, Box, CircularProgress, Divider, Snackbar,
-  SnackbarContent, TextField, Tooltip, Typography
+  Autocomplete, Box, CircularProgress, Divider,TextField, Tooltip, Typography
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { useDispatch } from 'react-redux';
-import { addToCart } from './Slices/add-cart/addCartSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addproduct } from './Slices/product/productSlice';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Product = () => {
-  const [CartList, setCartList] = useState([]);
   const [operAlert, setOperAlert] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [categoryOption, setCategoryOption] = useState([]);
-  const dispatch = useDispatch();
+  const [categoryFilter, setCategoryFilter] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isToast } = useSelector((state)=> state.Products);
 
-  const cartHandler = (product) => {
-    const isExist = CartList.find((cart) => cart.id === product.id);
-    if (!isExist) {
-      setCartList((prev) => [...prev, product]);
-    } else {
-      setOperAlert(true);
-    }
-  };
 
-  const handleClose = () => {
-    setOperAlert(false);
-  };
-
-  const searchHandler = (event) => {
-    const searchTerm = event.target.value.toLowerCase();
-    const filtered = products.filter((product) =>
-      product.title.toLowerCase().includes(searchTerm)
-    );
-    setFilteredProducts(filtered);
-  };
-
-  const categoryFilterHandler = (event, value) => {
-    if (value) {
-      const filtered = products.filter((product) => product.category === value.value);
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts(products);
-    }
-  };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true);
-        const response = await axios.get("https://fakestoreapi.com/products");
-        if (response.status === 200) {
-          setLoading(false);
-          setProducts(response.data);
-          setFilteredProducts(response.data);
+        setIsLoading(true);
+        const productsData = await axios.get("https://fakestoreapi.com/products");
 
-          const uniqueCategories = [
-            ...new Map(
-              response.data.map((product) => [product.category, { label: product.category, value: product.category }])
-            ).values(),
-          ];
+        if (productsData.status === 200) {
+          setIsLoading(false);
+          setAllProducts(productsData.data);
+          setFilteredProducts(productsData.data);
+
+          const filterCategories = productsData.data.map((product) => ({
+            label: product.category,
+            value: product.category,
+          }));
+          const uniqueCategories = filterCategories.filter(
+            (item, index, self) => index === self.findIndex((i) => i.value === item.value)
+          );
           setCategoryOption(uniqueCategories);
+        } else {
+          setIsLoading(true);
         }
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.log(err);
       }
     };
     fetchProducts();
   }, []);
+  
+  useEffect(() => {
+    if (categoryFilter) {
+      setFilteredProducts(allProducts.filter(product => product.category === categoryFilter));
+    } else {
+      setFilteredProducts(allProducts);
+    }
+  }, [categoryFilter, allProducts]);
+
+  const searchHandler = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+    setFilteredProducts(allProducts.filter(product =>
+      product.title.toLowerCase().includes(value)
+    ));
+  };
+
+  const categoryFilterHandler = (event, newValue) => {
+    setCategoryFilter(newValue ? newValue.value : null);
+  };
+
+  useEffect(() => {
+    if (isToast) {
+      toast("Product already added!");
+    }
+  }, [isToast])
 
   return (
     <>
+      <ToastContainer />
       <Box className="container d-flex justify-content-between mt-3">
         <TextField
           size="small"
@@ -96,24 +102,6 @@ const Product = () => {
           renderInput={(params) => <TextField {...params} label="Categories" />}
         />
       </Box>
-
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={operAlert}
-        autoHideDuration={6000}
-        onClose={handleClose}
-      >
-        <SnackbarContent
-          style={{ backgroundColor: "#bb2124" }}
-          message={
-            <Box sx={{ width: "100%" }} className="d-flex justify-content-between align-items-center">
-              <span id="client-snackbar">Product is Already in Cart</span>
-              <CloseIcon onClick={handleClose} style={{ cursor: 'pointer' }} />
-            </Box>
-          }
-        />
-      </Snackbar>
-
       {isLoading ? (
         <Box className="text-center mt-5">
           <CircularProgress size="3rem" />
@@ -123,27 +111,12 @@ const Product = () => {
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {filteredProducts.map((product) => (
               <div key={product.id} className="col">
-                <Box
-                  className="card shadow-sm p-3"
-                  sx={{
-                    borderRadius: 2,
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
+                <Box className="card shadow-sm p-3">
                   <img
                     src={product.image}
                     alt={product.title}
                     className="card-img-top img-fluid"
-                    style={{
-                      height: "150px",
-                      objectFit: "contain",
-                      transition: "transform 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    style={{ height: "150px", objectFit: "contain" }}
                   />
                   <Tooltip title={product.title} placement="top">
                     <Typography variant="h6" className="card-title mt-2 text-truncate">
@@ -162,11 +135,9 @@ const Product = () => {
                       <FavoriteIcon style={{ cursor: 'pointer' }} />
                     </Tooltip>
                     <Tooltip title="Add to Cart">
-                      <AddShoppingCartIcon onClick={()=>dispatch(addToCart ())}
+                      <AddShoppingCartIcon
+                        onClick={() => dispatch(addproduct(product))}
                         style={{ cursor: 'pointer' }}
-                     
-
-
                       />
                     </Tooltip>
                   </div>

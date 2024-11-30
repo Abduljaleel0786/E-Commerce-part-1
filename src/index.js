@@ -7,6 +7,7 @@ import SignIn from './auth/sign-in/SignIn';
 import ErrorPage from './ErrorPage';
 import ProductDetails from "./ProductDetails/ProductDetails"
 import { Provider } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
 import { store } from './store';
 
 
