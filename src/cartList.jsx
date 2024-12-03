@@ -19,13 +19,13 @@ const Cartlist = (props) => {
     );
 
     return (
-        <Drawer open={open} onClose={() => toggleDrawer(false)} anchor="left">
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: { xs: '100%', sm: 350 }, bgcolor: 'background.paper' }}>
+        <Drawer open={open} onClose={toggleDrawer(false)} anchor="left">
+            <Box  sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: { xs: '100%', sm: 340 }, bgcolor: 'background.paper' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
                     <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
                         Cart Items
                     </Typography>
-                    <Button onClick={() => toggleDrawer(true)} sx={{ minWidth: 0 }}>
+                    <Button onClick={toggleDrawer(false)} sx={{ minWidth: 0 }}>
                         <CloseIcon fontSize="medium" />
                     </Button>
                 </Box>

@@ -1,33 +1,11 @@
 import { Box, CircularProgress, Grid, Typography, Chip, IconButton } from '@mui/material';
 import { AddShoppingCart, Share, Favorite } from '@mui/icons-material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Header from '../header';
+import useProductDetails from './useProductDetails';
 
 const ProductDetails = () => {
-    const param = useParams();
-    const [productsDetail, setProductsDetail] = useState({});
-    const [isLoading, setloading] = useState(true);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                setloading(true);
-                const productsData = await axios.get(`https://fakestoreapi.com/products/${param?.product_id}`);
-                if (productsData.status === 200) {
-                    setloading(false);
-                    setProductsDetail(productsData?.data);
-                } else {
-                    setloading(true);
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        };
-        fetchProducts();
-    }, [param]);
-
+  const {productsDetail,isLoading}= useProductDetails();
     return (
         <>
             <Header />

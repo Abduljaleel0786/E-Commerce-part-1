@@ -5,16 +5,21 @@ const productSlice = createSlice({
   initialState: {
     items: [],
     isToast: false,
+    isProductAdded:false,
   },
   reducers: {
     addproduct: (state, action) => {
 
       const isExist = state.items.find((item) => item.id === action.payload.id)
-      
+
       if (isExist) {
-        state.isToast = true
+        state.isToast = true;
       } else {
+        state.isToast = false;
+        state.isProductAdded = true;
         state.items.push({ ...action.payload, quantity: 1 });
+       
+    
       }
 
     },

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
@@ -14,241 +13,172 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Cartlist from './cartList';
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Cartlist from './cartList';
 
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(3),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('md')]: {
-            width: '20ch',
-        },
-    },
+const NavLink = styled(Link)(({ theme }) => ({
+  textDecoration: 'none',
+  color: theme.palette.common.white,
+  margin: '0 15px',
+  fontWeight: 500,
 }));
 
 export default function Header() {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-    const [open, setOpen] = useState(false);
-    const [CartItems, setCartItems] = useState([]);
-    const {items}= useSelector((state) => state.Products)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+  const { items } = useSelector((state) => state.Products);
 
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
 
-    
-    const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
-    };
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-    const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const handleProfileMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
 
-    const handleMobileMenuClose = () => {
-        setMobileMoreAnchorEl(null);
-    };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-    };
+  const handleMobileMenuOpen = (event) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
 
-    const handleMobileMenuOpen = (event) => {
-        setMobileMoreAnchorEl(event.currentTarget);
-    };
+  const menuId = 'primary-search-account-menu';
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      id={menuId}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+    >
+      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+        <NavLink to="/sign-up" style={{ color: 'inherit' }}>My Account</NavLink>
+      </MenuItem>
+    </Menu>
+  );
 
-    const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}><Link to="/sign-up">My account</Link></MenuItem>
-        </Menu>
-    );
+  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      id={mobileMenuId}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+    >
+      <MenuItem>
+        <NavLink to="/" style={{ color: 'inherit' }}>Home</NavLink>
+      </MenuItem>
+      <MenuItem>
+        <NavLink to="/about" style={{ color: 'inherit' }}>About</NavLink>
+      </MenuItem>
+      <MenuItem>
+        <NavLink to="/sign-up" style={{ color: 'inherit' }}>Sign Up</NavLink>
+      </MenuItem>
+      <MenuItem>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={items?.length || 0} color="error">
+            <ShoppingCartIcon onClick={toggleDrawer(true)} />
+          </Badge>
+        </IconButton>
+        <p>Cart</p>
+      </MenuItem>
+      <MenuItem>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={12} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem>
+      <MenuItem onClick={handleProfileMenuOpen}>
+        <IconButton size="large" color="inherit">
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+    </Menu>
+  );
 
-    const mobileMenuId = 'primary-search-account-menu-mobile';
-    const renderMobileMenu = (
-        <Menu
-            anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={mobileMenuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMobileMenuOpen}
-            onClose={handleMobileMenuClose}
-        >
-            <MenuItem>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={items?.length} color="error">
-                        <ShoppingCartIcon onClick={toggleDrawer(true)} />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton
-                    size="large"
-                    aria-label="show 17 new notifications"
-                    color="inherit"
-                >
-                    <Badge badgeContent={12} color="error">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
-                <IconButton
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="primary-search-account-menu"
-                    aria-haspopup="true"
-                    color="inherit"
-                >
-                    <AccountCircle />
-                </IconButton>
-                <p>Profile</p>
-            </MenuItem>
-        </Menu>
-    );
-
-    useEffect(() => {
-        const CartItemArray = localStorage.getItem("CartList");
-        const parsedCartItemArray = JSON.parse(CartItemArray);
-        setCartItems(parsedCartItemArray);
-    }, []);
-
-    return (
-        <div className=' sticky-top'>
-            <Box sx={{ flexGrow: 1, position: 'sticky' }}>
-                <AppBar position="static">
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            sx={{ mr: 2 }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
-                        >
-                            MUI
-                        </Typography>
-                        {/* <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search> */}
-                        <Box sx={{ flexGrow: 1 }} />
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                                <Badge badgeContent={items?.length} color="error">
-                                    <ShoppingCartIcon onClick={toggleDrawer(true)} />
-                                </Badge>
-                            </IconButton>
-                            <IconButton
-                                size="large"
-                                aria-label="show 17 new notifications"
-                                color="inherit"
-                            >
-                                <Badge badgeContent={17} color="error">
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
-                            <IconButton
-                                size="large"
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                <AccountCircle />
-                            </IconButton>
-                        </Box>
-                        <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                            <IconButton
-                                size="large"
-                                aria-label="show more"
-                                aria-controls={mobileMenuId}
-                                aria-haspopup="true"
-                                onClick={handleMobileMenuOpen}
-                                color="inherit"
-                            >
-                                <MoreIcon />
-                            </IconButton>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-                {renderMobileMenu}
-                {renderMenu}
-                <Cartlist open={open} toggleDrawer={toggleDrawer} />
-            </Box>
-        </div>
-    );
+  return (
+    <Box className="sticky-top" sx={{ flexGrow: 1 }}>
+      <AppBar position="sticky">
+        <Toolbar>
+          <IconButton size="large" edge="start" color="inherit" aria-label="menu">
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+            E-Commerce 
+          </Typography>
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/about">About</NavLink>
+            <NavLink to="/sign-up">Sign Up</NavLink>
+            <IconButton size="large" color="inherit">
+              <Badge badgeContent={items?.length || 0} color="error">
+                <ShoppingCartIcon onClick={toggleDrawer(true)} />
+              </Badge>
+            </IconButton>
+            <IconButton size="large" color="inherit">
+              <Badge badgeContent={12} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <IconButton
+              size="large"
+              edge="end"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={handleProfileMenuOpen}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
+          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-label="show more"
+              aria-controls={mobileMenuId}
+              aria-haspopup="true"
+              onClick={handleMobileMenuOpen}
+              color="inherit"
+            >
+              <MoreIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      {renderMobileMenu}
+      {renderMenu}
+      <Cartlist open={open} toggleDrawer={toggleDrawer} />
+    </Box>
+  );
 }
